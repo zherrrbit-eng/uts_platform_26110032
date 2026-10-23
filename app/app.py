@@ -1,21 +1,17 @@
-from flask import Flask, render_template_string
-
+from flask import Flask
+import os, socket
 app = Flask(__name__)
-HTML = """
-<!DOCTYPE html>
-<html>
-<head><title>Buku Tamu Digital</title></head>
-<body style="font-family: Arial; text-align:center; margin-top:50px;">
-<h1>Buku Tamu Digital - UTS Platform</h1>
-<p>Aplikasi Berjalan di Docker Compose!</p>
-<p><b>Nama: Utari Rohiriwu</b></p>
-<p>Status: OK - Port 5000</p>
-</body>
-</html>
-"""
 @app.route('/')
-def index():
-    return render_template_string(HTML)
-
+def home():
+    db_host = os.getenv('DB_HOST', 'db')
+    db_name = os.getenv('DB_NAME', 'bukutamu')
+    try:
+        import mysql.connector
+        conn = mysql.connector.connect(host=db_host, user=os.getenv('DB_USER','root'), password=os.getenv('DB_PASSWORD','root'), database=db_name)
+        db_status = f"✅ Terhubung ke DB {db_name} di host {db_host}"
+        conn.close()
+    except Exception as e:
+        db_status = f"⚠️ DB belum siap: {e} (host={db_host}) - Tapi OK"
+    return f"<h1>Buku Tamu Digital - UTS Platform</h1><p><b>Nama: Agrin</b></p><p><b>{db_status}</b></p><p>Network: bukutamu-net | Volume: db_data</p>"
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

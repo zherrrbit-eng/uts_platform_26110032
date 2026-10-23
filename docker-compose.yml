@@ -1,34 +1,35 @@
 services:
   web:
-    build: ./app
+    build: .
     container_name: web_bukutamu
     ports:
       - "5000:5000"
-    environment:
-      - DB_HOST=db
-      - DB_USER=root
-      - DB_PASSWORD=secretpassword
-      - DB_NAME=bukutamu_db
     depends_on:
       - db
+    environment:
+      DB_HOST: db
+      DB_USER: root
+      DB_PASSWORD: root
+      DB_NAME: bukutamu
     networks:
       - bukutamu-net
-
+    volumes:
+      - ./app:/app
+      - ./logs:/app/logs
   db:
     image: mysql:8.0
     container_name: db_bukutamu
     environment:
-      MYSQL_ROOT_PASSWORD: secretpassword
-      MYSQL_DATABASE: bukutamu_db
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: bukutamu
     volumes:
       - db_data:/var/lib/mysql
     networks:
       - bukutamu-net
-
-volumes:
-  db_data:
-
 networks:
   bukutamu-net:
+    name: bukutamu-net
     driver: bridge
-
+volumes:
+  db_data:
+    name: db_data...
